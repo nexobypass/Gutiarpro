@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Strum Studio — Guitar Tuner & Learning Path</title>
+<style>
+  :root{
+    --bg:#0f1115;
+    --bg-2:#161a21;
+    --card:#1c2129;
+    --card-2:#232934;
+    --line:#2c3340;
+    --txt:#e8ecf2;
+    --muted:#9aa3b2;
+    --accent:#ff6b35;
+    --accent-2:#ffb627;
+    --green:#3ddc84;
+    --red:#ff4d4d;
+    --grad:linear-gradient(135deg,#ff6b35 0%,#ffb627 100%);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);
+    color:var(--txt);
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1100px;margin:0 auto;padding:0 20px}
+
+  /* ===== NAV ===== */
+  header{
+    position:sticky;top:0;z-index:50;
+    background:rgba(15,17,21,.85);
+    backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--line);
+  }
+  nav{display:flex;align-items:center;justify-content:space-between;height:64px}
+  .logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;letter-spacing:.5px}
+  .logo-mark{
+    width:34px;height:34px;border-radius:9px;background:var(--grad);
+    display:flex;align-items:center;justify-content:center;font-size:20px;
+    box-shadow:0 4px 14px rgba(255,107,53,.4);
+  }
+  .nav-links{display:flex;gap:24px;align-items:center}
+  .nav-links a{color:var(--muted);font-weight:500;transition:color .2s}
+  .nav-links a:hover{color:var(--txt)}
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:10px 18px;border-radius:10px;font-weight:600;cursor:pointer;
+    border:none;font-size:14px;transition:transform .15s,box-shadow .2s,background .2s;
+  }
+  .btn-primary{background:var(--grad);color:#1a1208;box-shadow:0 4px 14px rgba(255,107,53,.35)}
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(255,107,53,.5)}
+  .btn-ghost{background:transparent;color:var(--txt);border:1px solid var(--line)}
+  .btn-ghost:hover{background:var(--card)}
+  .menu-btn{display:none;background:none;border:none;color:var(--txt);font-size:24px;cursor:pointer}
+
+  /* ===== HERO ===== */
+  .hero{
+    position:relative;overflow:hidden;
+    padding:80px 0 60px;
+    background:
+      radial-gradient(800px 400px at 80% -10%,rgba(255,107,53,.18),transparent 60%),
+      radial-gradient(600px 400px at 10% 110%,rgba(255,182,39,.12),transparent 60%);
+  }
+  .hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:50px;align-items:center}
+  .eyebrow{
+    display:inline-block;padding:6px 14px;border-radius:999px;
+    background:rgba(255,107,53,.12);color:var(--accent);
+    font-size:13px;font-weight:700;letter-spacing:.5px;margin-bottom:18px;
+    border:1px solid rgba(255,107,53,.25);
+  }
+  h1{font-size:clamp(34px,5vw,56px);line-height:1.08;font-weight:900;letter-spacing:-1px}
+  h1 .hl{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .hero p.lead{color:var(--muted);font-size:18px;margin:20px 0 28px;max-width:520px}
+  .hero-cta{display:flex;gap:14px;flex-wrap:wrap}
+  .hero-stats{display:flex;gap:30px;margin-top:36px}
+  .stat .num{font-size:28px;font-weight:800;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .stat .lbl{color:var(--muted);font-size:13px}
+
+  .hero-visual{
+    position:relative;aspect-ratio:1/1;max-width:420px;margin:0 auto;
+    border-radius:24px;
+    background:
+      radial-gradient(circle at 50% 50%,rgba(255,107,53,.18),transparent 65%),
+      linear-gradient(160deg,#1c2129,#0f1115);
+    border:1px solid var(--line);
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 30px 60px rgba(0,0,0,.45);
+    overflow:hidden;
+  }
+  .hero-visual::before{
+    content:"";position:absolute;inset:0;
+    background:
+      repeating-linear-gradient(90deg,transparent 0 38px,rgba(255,255,255,.04) 38px 39px),
+      repeating-linear-gradient(0deg,transparent 0 38px,rgba(255,255,255,.03) 38px 39px);
+  }
+  .guitar-emoji{font-size:140px;filter:drop-shadow(0 10px 30px rgba(255,107,53,.4));position:relative;z-index:1;animation:sway 4s ease-in-out infinite}
+  @keyframes sway{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(6deg)}}
+
+  /* ===== SECTION ===== */
+  section{padding:70px 0}
+  .section-head{text-align:center;max-width:680px;margin:0 auto 50px}
+  .section-head h2{font-size:clamp(28px,4vw,40px);font-weight:800;letter-spacing:-.5px;margin-bottom:12px}
+  .section-head p{color:var(--muted);font-size:17px}
+
+  /* ===== TUNER ===== */
+  .tuner-card{
+    background:linear-gradient(160deg,var(--card),var(--bg-2));
+    border:1px solid var(--line);border-radius:24px;
+    padding:40px;max-width:760px;margin:0 auto;
+    box-shadow:0 20px 50px rgba(0,0,0,.4);
+  }
+  .tuner-display{
+    background:#0a0c10;border-radius:18px;padding:30px 20px;
+    border:1px solid var(--line);text-align:center;position:relative;
+    overflow:hidden;
+  }
+  .tuner-display::before{
+    content:"";position:absolute;inset:0;
+    background:radial-gradient(circle at 50% 0%,rgba(255,107,53,.08),transparent 60%);
+  }
+  .note-name{
+    font-size:96px;font-weight:900;line-height:1;letter-spacing:-2px;
+    background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 40px rgba(255,107,53,.3);
+    min-height:96px;
+    position:relative;
+  }
+  .note-name.detected{color:var(--txt);-webkit-text-fill-color:var(--txt)}
+  .freq{color:var(--muted);font-size:14px;margin-top:6px;position:relative;font-variant-numeric:tabular-nums}
+  .meter{
+    margin-top:24px;position:relative;height:50px;
+    background:linear-gradient(90deg,rgba(255,77,77,.15) 0%,rgba(255,182,39,.1) 35%,rgba(61,220,132,.15) 50%,rgba(255,182,39,.1) 65%,rgba(255,77,77,.15) 100%);
+    border-radius:10px;border:1px solid var(--line);overflow:hidden;
+  }
+  .meter-scale{
+    position:absolute;inset:0;display:flex;align-items:center;justify-content:space-between;
+    padding:0 10px;font-size:10px;color:var(--muted);font-variant-numeric:tabular-nums;
+  }
+  .meter-scale span{opacity:.6}
+  .meter-needle{
+    position:absolute;top:0;bottom:0;left:50%;width:3px;background:var(--accent);
+    border-radius:2px;transform:translateX(-50%);
+    box-shadow:0 0 12px rgba(255,107,53,.8);
+    transition:left .12s ease-out,background .15s;
+  }
+  .meter-center{
+    position:absolute;top:0;bottom:0;left:50%;width:1px;background:rgba(255,255,255,.2);
+    transform:translateX(-50%);
+  }
+  .tuner-status{
+    margin-top:18px;font-size:15px;font-weight:600;color:var(--muted);
+    display:flex;align-items:center;justify-content:center;gap:8px;min-height:24px;
+  }
+  .tuner-status.in-tune{color:var(--green)}
+  .tuner-status.off{color:var(--accent-2)}
+  .status-dot{width:10px;height:10px;border-radius:50%;background:var(--muted);display:inline-block}
+  .status-dot.in-tune{background:var(--green);box-shadow:0 0 10px var(--green)}
+  .status-dot.off{background:var(--accent-2)}
+
+  .string-row{display:flex;gap:8px;justify-content:center;margin-top:28px;flex-wrap:wrap}
+  .string-btn{
+    flex:1;min-width:90px;padding:14px 8px;border-radius:12px;
+    background:var(--card-2);border:1px solid var(--line);cursor:pointer;
+    color:var(--txt);font-weight:700;text-align:center;transition:all .2s;
+  }
+  .string-btn:hover{border-color:var(--accent);transform:translateY(-2px)}
+  .string-btn .s-name{font-size:20px;display:block}
+  .string-btn .s-note{font-size:12px;color:var(--muted);font-weight:500}
+  .string-btn.playing{background:var(--grad);border-color:transparent;color:#1a1208}
+  .string-btn.playing .s-note{color:#1a1208;opacity:.8}
+
+  .tuner-controls{display:flex;gap:12px;justify-content:center;margin-top:28px;flex-wrap:wrap}
+  .tuning-select{
+    background:var(--card-2);border:1px solid var(--line);color:var(--txt);
+    padding:10px 14px;border-radius:10px;font-size:14px;cursor:pointer;font-family:inherit;
+  }
+
+  /* ===== PATH ===== */
+  .path-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px}
+  .path-card{
+    background:var(--card);border:1px solid var(--line);border-radius:18px;
+    padding:28px;position:relative;transition:transform .2s,border-color .2s,box-shadow .2s;
+    overflow:hidden;
+  }
+  .path-card::before{
+    content:"";position:absolute;top:0;left:0;right:0;height:4px;background:var(--grad);
+    opacity:0;transition:opacity .25s;
+  }
+  .path-card:hover{transform:translateY(-4px);border-color:rgba(255,107,53,.4);box-shadow:0 14px 30px rgba(0,0,0,.35)}
+  .path-card:hover::before{opacity:1}
+  .path-num{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:42px;height:42px;border-radius:12px;
+    background:rgba(255,107,53,.12);color:var(--accent);
+    font-weight:800;font-size:18px;margin-bottom:16px;border:1px solid rgba(255,107,53,.25);
+  }
+  .path-card h3{font-size:20px;font-weight:700;margin-bottom:6px}
+  .path-card .sub{color:var(--accent-2);font-size:13px;font-weight:600;margin-bottom:14px}
+  .path-card ul{list-style:none}
+  .path-card li{
+    color:var(--muted);font-size:14px;padding:6px 0 6px 22px;position:relative;
+  }
+  .path-card li::before{
+    content:"";position:absolute;left:0;top:13px;width:8px;height:8px;
+    border-radius:2px;background:var(--accent);transform:rotate(45deg);opacity:.7;
+  }
+  .progress-bar{
+    margin-top:18px;height:6px;background:var(--bg-2);border-radius:3px;overflow:hidden;
+  }
+  .progress-bar > div{
+    height:100%;background:var(--grad);border-radius:3px;width:0;transition:width .4s;
+  }
+  .progress-meta{display:flex;justify-content:space-between;margin-top:8px;font-size:12px;color:var(--muted)}
+
+  /* ===== CHORDS ===== */
+  .chord-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:16px}
+  .chord-card{
+    background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:18px;text-align:center;transition:transform .2s,border-color .2s;cursor:pointer;
+  }
+  .chord-card:hover{transform:translateY(-3px);border-color:var(--accent)}
+  .chord-name{font-size:24px;font-weight:800;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:10px}
+  .chord-diagram{
+    background:#0a0c10;border-radius:10px;padding:10px;border:1px solid var(--line);
+    aspect-ratio:4/5;display:flex;align-items:center;justify-content:center;
+  }
+  .chord-diagram svg{width:100%;height:100%}
+
+  /* ===== TIPS ===== */
+  .tips-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}
+  .tip{
+    background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px;
+    display:flex;gap:14px;align-items:flex-start;
+  }
+  .tip-icon{
+    flex-shrink:0;width:38px;height:38px;border-radius:10px;
+    background:rgba(255,182,39,.12);color:var(--accent-2);
+    display:flex;align-items:center;justify-content:center;font-size:18px;
+    border:1px solid rgba(255,182,39,.25);
+  }
+  .tip h4{font-size:16px;margin-bottom:4px}
+  .tip p{color:var(--muted);font-size:14px}
+
+  /* ===== FOOTER ===== */
+  footer{border-top:1px solid var(--line);padding:40px 0;color:var(--muted);font-size:14px}
+  .footer-grid{display:flex;justify-content:space-between;gap:30px;flex-wrap:wrap}
+  .footer-grid a:hover{color:var(--txt)}
+
+  /* ===== RESPONSIVE ===== */
+  @media(max-width:820px){
+    .hero-grid{grid-template-columns:1fr;gap:40px}
+    .hero-visual{order:-1;max-width:300px}
+    .nav-links{display:none}
+    .menu-btn{display:block}
+    .nav-open .nav-links{
+      display:flex;flex-direction:column;position:absolute;top:64px;left:0;right:0;
+      background:var(--bg-2);padding:20px;border-bottom:1px solid var(--line);gap:14px;
+    }
+    .note-name{font-size:72px;min-height:72px}
+    .tuner-card{padding:24px 18px}
+  }
+  @media(max-width:480px){
+    .hero-stats{gap:18px}
+    .stat .num{font-size:22px}
+    .string-btn{min-width:calc(33% - 6px)}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <nav>
+      <div class="logo">
+        <div class="logo-mark">🎸</div>
+        <span>Strum Studio</span>
+      </div>
+      <div class="nav-links" id="navLinks">
+        <a href="#tuner">Tuner</a>
+        <a href="#path">Learning Path</a>
+        <a href="#chords">Chords</a>
+        <a href="#tips">Tips</a>
+        <a href="#tuner" class="btn btn-primary">Start Tuning</a>
+      </div>
+      <button class="menu-btn" id="menuBtn">☰</button>
+    </nav>
+  </div>
+</header>
+
+<!-- ===== HERO ===== -->
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-grid">
+      <div>
+        <span class="eyebrow">PLAY • TUNE • LEARN</span>
+        <h1>Your <span class="hl">Guitar Journey</span><br>Starts Here</h1>
+        <p class="lead">A free, browser-based guitar studio. Tune your strings with your microphone in seconds, then follow a clear, step-by-step path from your first chord to your first song.</p>
+        <div class="hero-cta">
+          <a href="#tuner" class="btn btn-primary">Open the Tuner</a>
+          <a href="#path" class="btn btn-ghost">See Learning Path →</a>
+        </div>
+        <div class="hero-stats">
+          <div class="stat"><div class="num">6</div><div class="lbl">Strings tuned live</div></div>
+          <div class="stat"><div class="num">5</div><div class="lbl">Learning stages</div></div>
+          <div class="stat"><div class="num">8</div><div class="lbl">Essential chords</div></div>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="guitar-emoji">🎸</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== TUNER ===== -->
+<section id="tuner" style="padding-top:30px">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Easy Guitar Tuner</h2>
+      <p>Click "Use Microphone", play a string, and the tuner shows the note, how far off you are, and whether you're in tune. Prefer reference tones? Tap a string below to hear it.</p>
+    </div>
+
+    <div class="tuner-card">
+      <div class="tuner-display">
+        <div class="note-name" id="noteName">—</div>
+        <div class="freq" id="freq">0.0 Hz</div>
+        <div class="meter">
+          <div class="meter-center"></div>
+          <div class="meter-needle" id="needle"></div>
+          <div class="meter-scale">
+            <span>-50</span><span>-25</span><span>0</span><span>+25</span><span>+50</span>
+          </div>
+        </div>
+        <div class="tuner-status" id="status">
+          <span class="status-dot" id="statusDot"></span>
+          <span id="statusText">Press "Use Microphone" to start</span>
+        </div>
+      </div>
+
+      <div class="string-row" id="stringRow">
+        <button class="string-btn" data-string="0"><span class="s-name">E</span><span class="s-note">6th • 82.4 Hz</span></button>
+        <button class="string-btn" data-string="1"><span class="s-name">A</span><span class="s-note">5th • 110.0 Hz</span></button>
+        <button class="string-btn" data-string="2"><span class="s-name">D</span><span class="s-note">4th • 146.8 Hz</span></button>
+        <button class="string-btn" data-string="3"><span class="s-name">G</span><span class="s-note">3rd • 196.0 Hz</span></button>
+        <button class="string-btn" data-string="4"><span class="s-name">B</span><span class="s-note">2nd • 246.9 Hz</span></button>
+        <button class="string-btn" data-string="5"><span class="s-name">e</span><span class="s-note">1st • 329.6 Hz</span></button>
+      </div>
+
+      <div class="tuner-controls">
+        <button class="btn btn-primary" id="micBtn">🎤 Use Microphone</button>
+        <select class="tuning-select" id="tuningSelect">
+          <option value="standard">Standard Tuning (E A D G B E)</option>
+          <option value="drop_d">Drop D (D A D G B E)</option>
+          <option value="open_g">Open G (D G D G B D)</option>
+          <option value="half_step">Half Step Down (Eb Ab Db Gb Bb Eb)</option>
+        </select>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== LEARNING PATH ===== -->
+<section id="path">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Your Path to Learn Guitar</h2>
+      <p>Five clear stages — from holding the guitar for the first time to playing full songs. Check off each milestone at your own pace.</p>
+    </div>
+
+    <div class="path-grid" id="pathGrid">
+      <!-- Stage 1 -->
+      <div class="path-card">
+        <div class="path-num">1</div>
+        <h3>Foundations</h3>
+        <div class="sub">Weeks 1–2 • Getting comfortable</div>
+        <ul>
+          <li>How to hold the guitar (seated & standing)</li>
+          <li>Names of the 6 strings: E A D G B e</li>
+          <li>Right hand: holding a pick, basic downstrokes</li>
+          <li>Left hand: finger numbering (1-2-3-4)</li>
+          <li>Tuning your guitar with this tuner</li>
+          <li>Finger stretch exercise 1-2-3-4 per string</li>
+        </ul>
+        <div class="progress-bar"><div data-stage="1"></div></div>
+        <div class="progress-meta"><span>Progress</span><span class="pct" data-stage="1">0%</span></div>
+      </div>
+
+      <!-- Stage 2 -->
+      <div class="path-card">
+        <div class="path-num">2</div>
+        <h3>First Chords</h3>
+        <div class="sub">Weeks 3–6 • Open position</div>
+        <ul>
+          <li>Em, Am, D — the easy 2-3 finger chords</li>
+          <li>G, C, E, A — full open chords</li>
+          <li>The "anchor finger" concept (G–C–G transition)</li>
+          <li>Switching between 2 chords in 5 seconds</li>
+          <li>Simple 4/4 downstroke strum pattern</li>
+          <li>Play your first 2-chord song (Em → Am)</li>
+        </ul>
+        <div class="progress-bar"><div data-stage="2"></div></div>
+        <div class="progress-meta"><span>Progress</span><span class="pct" data-stage="2">0%</span></div>
+      </div>
+
+      <!-- Stage 3 -->
+      <div class="path-card">
+        <div class="path-num">3</div>
+        <h3>Rhythm &amp; Strumming</h3>
+        <div class="sub">Weeks 7–12 • Groove &amp; timing</div>
+        <ul>
+          <li>Down-up strumming (D D U U D U)</li>
+          <li>The "Wonderwall" strum pattern</li>
+          <li>Using a metronome at 60-90 BPM</li>
+          <li>Muting strings for percussive hits</li>
+          <li>3/4 vs 4/4 time signatures</li>
+          <li>Playing along to a full song start-to-finish</li>
+        </ul>
+        <div class="progress-bar"><div data-stage="3"></div></div>
+        <div class="progress-meta"><span>Progress</span><span class="pct" data-stage="3">0%</span></div>
+      </div>
+
+      <!-- Stage 4 -->
+      <div class="path-card">
+        <div class="path-num">4</div>
+        <h3>Barre Chords &amp; Scales</h3>
+        <div class="sub">Months 4–6 • Unlocking the fretboard</div>
+        <ul>
+          <li>F barre chord (the big milestone!)</li>
+          <li>E-shape and A-shape movable barre chords</li>
+          <li>Pentatonic minor scale (box 1)</li>
+          <li>Pentatonic major scale (box 1)</li>
+          <li>Basic hammer-ons and pull-offs</li>
+          <li>Your first 12-bar blues in A</li>
+        </ul>
+        <div class="progress-bar"><div data-stage="4"></div></div>
+        <div class="progress-meta"><span>Progress</span><span class="pct" data-stage="4">0%</span></div>
+      </div>
+
+      <!-- Stage 5 -->
+      <div class="path-card">
+        <div class="path-num">5</div>
+        <h3>Songs &amp; Style</h3>
+        <div class="sub">Month 6+ • Finding your voice</div>
+        <ul>
+          <li>5 full songs in your favorite genre</li>
+          <li>Fingerpicking patterns (Travis picking)</li>
+          <li>Capo usage and transposing keys</li>
+          <li>Bending, slides, and vibrato</li>
+          <li>Improvising over a backing track</li>
+          <li>Record yourself and share your first cover</li>
+        </ul>
+        <div class="progress-bar"><div data-stage="5"></div></div>
+        <div class="progress-meta"><span>Progress</span><span class="pct" data-stage="5">0%</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CHORDS ===== -->
+<section id="chords">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>8 Essential Chords</h2>
+      <p>The chords you'll use in 80% of popular songs. Hover or tap to hear them.</p>
+    </div>
+    <div class="chord-grid" id="chordGrid"></div>
+  </div>
+</section>
+
+<!-- ===== TIPS ===== -->
+<section id="tips" style="padding-top:20px">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Pro Tips for Beginners</h2>
+      <p>Shortcuts that save months of frustration.</p>
+    </div>
+    <div class="tips-grid">
+      <div class="tip">
+        <div class="tip-icon">⏱️</div>
+        <div><h4>15 minutes daily beats 2 hours weekly</h4><p>Muscle memory builds through frequency, not marathon sessions. Short, focused practice every day wins.</p></div>
+      </div>
+      <div class="tip">
+        <div class="tip-icon">👂</div>
+        <div><h4>Always tune before practicing</h4><p>Playing out of tune trains your ear wrong. Open this tuner first — every single session.</p></div>
+      </div>
+      <div class="tip">
+        <div class="tip-icon">🐌</div>
+        <div><h4>Slow down to speed up</h4><p>Practice transitions at half speed. Speed comes automatically once the movement is clean.</p></div>
+      </div>
+      <div class="tip">
+        <div class="tip-icon">💪</div>
+        <div><h4>F barre chord is a wall — push through</h4><p>Everyone struggles with barre chords for 2–4 weeks. It's normal. Don't quit at stage 4.</p></div>
+      </div>
+      <div class="tip">
+        <div class="tip-icon">🎵</div>
+        <div><h4>Learn songs, not just exercises</h4><p>Songs keep you motivated. Pick one easy song per week and learn it completely.</p></div>
+      </div>
+      <div class="tip">
+        <div class="tip-icon">📸</div>
+        <div><h4>Record yourself weekly</h4><p>You won't notice daily progress, but recordings a month apart will shock you.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <div class="logo" style="margin-bottom:10px"><div class="logo-mark">🎸</div><span>Strum Studio</span></div>
+        <div>Free guitar tools that run in your browser. No downloads, no sign-ups.</div>
+      </div>
+      <div style="display:flex;gap:24px;flex-direction:column">
+        <a href="#tuner">Tuner</a>
+        <a href="#path">Learning Path</a>
+        <a href="#chords">Chords</a>
+        <a href="#tips">Tips</a>
+      </div>
+      <div style="max-width:280px">
+        <div style="color:var(--txt);font-weight:600;margin-bottom:8px">Practice daily.</div>
+        <div>Progress saved locally in your browser. © 2026 Strum Studio.</div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ============================================================
+   STRUM STUDIO — Guitar Tuner + Learning Path
+   ============================================================ */
+
+/* ---------- Mobile menu ---------- */
+const menuBtn = document.getElementById('menuBtn');
+const navLinks = document.getElementById('navLinks');
+menuBtn.addEventListener('click',()=>document.body.classList.toggle('nav-open'));
+navLinks.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>document.body.classList.remove('nav-open')));
+
+/* ---------- Tuning presets ---------- */
+const TUNINGS = {
+  standard:  [{name:'E',freq:82.41},{name:'A',freq:110.00},{name:'D',freq:146.83},{name:'G',freq:196.00},{name:'B',freq:246.94},{name:'e',freq:329.63}],
+  drop_d:    [{name:'D',freq:73.42},{name:'A',freq:110.00},{name:'D',freq:146.83},{name:'G',freq:196.00},{name:'B',freq:246.94},{name:'e',freq:329.63}],
+  open_g:    [{name:'D',freq:73.42},{name:'G',freq:98.00},{name:'D',freq:146.83},{name:'G',freq:196.00},{name:'B',freq:246.94},{name:'d',freq:293.66}],
+  half_step: [{name:'Eb',freq:77.78},{name:'Ab',freq:103.83},{name:'Db',freq:138.59},{name:'Gb',freq:185.00},{name:'Bb',freq:233.08},{name:'eb',freq:311.13}]
+};
+const NOTE_NAMES = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+
+let currentTuning = 'standard';
+
+/* ---------- DOM refs ---------- */
+const noteName = document.getElementById('noteName');
+const freqEl = document.getElementById('freq');
+const needle = document.getElementById('needle');
+const statusEl = document.getElementById('status');
+const statusText = document.getElementById('statusText');
+const statusDot = document.getElementById('statusDot');
+const micBtn = document.getElementById('micBtn');
+const tuningSelect = document.getElementById('tuningSelect');
+const stringRow = document.getElementById('stringRow');
+
+/* ---------- Update string buttons when tuning changes ---------- */
+function renderStrings(){
+  const t = TUNINGS[currentTuning];
+  const subs = ['6th','5th','4th','3rd','2nd','1st'];
+  stringRow.querySelectorAll('.string-btn').forEach((btn,i)=>{
+    btn.querySelector('.s-name').textContent = t[i].name;
+    btn.querySelector('.s-note').textContent = `${subs[i]} • ${t[i].freq.toFixed(1)} Hz`;
+  });
+}
+renderStrings();
+tuningSelect.addEventListener('change',e=>{
+  currentTuning = e.target.value;
+  renderStrings();
+  stopReference();
+});
+
+/* ---------- Reference tone playback (Web Audio) ---------- */
+let audioCtx = null;
+let currentOsc = null;
+let currentGain = null;
+let playingIdx = -1;
+
+function ensureCtx(){
+  if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+  if(audioCtx.state==='suspended') audioCtx.resume();
+}
+
+function playReference(idx){
+  ensureCtx();
+  stopReference();
+  const t = TUNINGS[currentTuning][idx];
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = 'guitar'; // falls back to sine if unsupported
+  if(osc.type!=='guitar') osc.type='triangle';
+  osc.frequency.value = t.freq;
+  // gentle pluck envelope
+  gain.gain.setValueAtTime(0,audioCtx.currentTime);
+  gain.gain.linearRampToValueAtTime(0.35,audioCtx.currentTime+0.02);
+  gain.gain.exponentialRampToValueAtTime(0.0001,audioCtx.currentTime+2.2);
+  osc.connect(gain).connect(audioCtx.destination);
+  osc.start();
+  osc.stop(audioCtx.currentTime+2.3);
+  currentOsc=osc;currentGain=gain;playingIdx=idx;
+  stringRow.querySelectorAll('.string-btn').forEach(b=>b.classList.remove('playing'));
+  stringRow.querySelectorAll('.string-btn')[idx].classList.add('playing');
+  osc.onended=()=>{if(playingIdx===idx){stringRow.querySelectorAll('.string-btn')[idx].classList.remove('playing');playingIdx=-1;}};
+}
+function stopReference(){
+  if(currentOsc){try{currentOsc.stop()}catch(e){}}
+  currentOsc=null;currentGain=null;
+  stringRow.querySelectorAll('.string-btn').forEach(b=>b.classList.remove('playing'));
+}
+stringRow.querySelectorAll('.string-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>playReference(parseInt(btn.dataset.string)));
+});
+
+/* ---------- Microphone tuner (autocorrelation pitch detection) ---------- */
+let mediaStream=null,analyser=null,rafId=null,micActive=false;
+
+micBtn.addEventListener('click',()=>{
+  if(micActive) stopMic(); else startMic();
+});
+
+async function startMic(){
+  try{
+    mediaStream = await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}});
+    ensureCtx();
+    const src = audioCtx.createMediaStreamSource(mediaStream);
+    analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 4096;
+    src.connect(analyser);
+    micActive=true;
+    micBtn.textContent='⏹ Stop Microphone';
+    statusText.textContent='Listening... play a string!';
+    statusEl.classList.remove('in-tune','off');
+    statusDot.className='status-dot';
+    loop();
+  }catch(err){
+    statusText.textContent='Microphone blocked. Check browser permissions.';
+    statusEl.classList.add('off');
+    statusDot.className='status-dot off';
+  }
+}
+function stopMic(){
+  micActive=false;
+  cancelAnimationFrame(rafId);
+  if(mediaStream){mediaStream.getTracks().forEach(t=>t.stop());mediaStream=null;}
+  analyser=null;
+  micBtn.textContent='🎤 Use Microphone';
+  noteName.textContent='—';noteName.classList.remove('detected');
+  freqEl.textContent='0.0 Hz';
+  needle.style.left='50%';
+  statusText.textContent='Microphone off';
+  statusEl.classList.remove('in-tune','off');
+  statusDot.className='status-dot';
+}
+
+const buf = new Float32Array(4096);
+function loop(){
+  if(!micActive) return;
+  analyser.getFloatTimeDomainData(buf);
+  const pitch = detectPitch(buf, audioCtx.sampleRate);
+  if(pitch>60 && pitch<400){
+    updateDisplay(pitch);
+  }
+  rafId = requestAnimationFrame(loop);
+}
+
+/* ---------- Autocorrelation pitch detection ---------- */
+function detectPitch(buf,sampleRate){
+  // RMS to check there's signal
+  let rms=0;
+  for(let i=0;i<buf.length;i++) rms+=buf[i]*buf[i];
+  rms=Math.sqrt(rms/buf.length);
+  if(rms<0.01) return -1; // too quiet
+
+  let bestOffset=-1, bestCorr=0;
+  const minPeriod = Math.floor(sampleRate/400); // 400 Hz max
+  const maxPeriod = Math.floor(sampleRate/60);  // 60 Hz min
+
+  for(let period=minPeriod;period<=maxPeriod;period++){
+    let corr=0;
+    for(let i=0;i<buf.length-period;i++){
+      corr += buf[i]*buf[i+period];
+    }
+    if(corr>bestCorr){bestCorr=corr;bestOffset=period;}
+  }
+  if(bestOffset<0) return -1;
+  return sampleRate/bestOffset;
+}
+
+/* ---------- Update tuner UI ---------- */
+function updateDisplay(pitch){
+  // nearest note
+  const noteNum = 12 * Math.log2(pitch/440) + 69; // MIDI note number (A4=69)
+  const rounded = Math.round(noteNum);
+  const cents = Math.round((noteNum-rounded)*100);
+  const noteIndex = ((rounded%12)+12)%12;
+  const octave = Math.floor(rounded/12)-1;
+  const noteLabel = NOTE_NAMES[noteIndex];
+
+  noteName.textContent = noteLabel;
+  noteName.classList.add('detected');
+  freqEl.textContent = pitch.toFixed(1) + ' Hz';
+
+  // needle position: -50..+50 cents mapped to 0..100%
+  const pos = 50 + Math.max(-50,Math.min(50,cents));
+  needle.style.left = pos + '%';
+
+  // status
+  if(Math.abs(cents)<5){
+    needle.style.background = 'var(--green)';
+    needle.style.boxShadow = '0 0 12px var(--green)';
+    statusText.textContent = `In tune! ${noteLabel}${octave} (${cents>0?'+':''}${cents}¢)`;
+    statusEl.className='tuner-status in-tune';
+    statusDot.className='status-dot in-tune';
+  }else if(cents<0){
+    needle.style.background = 'var(--accent-2)';
+    needle.style.boxShadow = '0 0 12px var(--accent-2)';
+    statusText.textContent = `Too low — tighten string (${cents}¢)`;
+    statusEl.className='tuner-status off';
+    statusDot.className='status-dot off';
+  }else{
+    needle.style.background = 'var(--accent-2)';
+    needle.style.boxShadow = '0 0 12px var(--accent-2)';
+    statusText.textContent = `Too high — loosen string (+${cents}¢)`;
+    statusEl.className='tuner-status off';
+    statusDot.className='status-dot off';
+  }
+}
+
+/* ============================================================
+   CHORD DIAGRAMS — rendered as inline SVG
+   ============================================================ */
+const CHORDS = [
+  {name:'Em', frets:[0,2,2,0,0,0], fingers:[0,2,3,0,0,0]},
+  {name:'Am', frets:[-1,0,2,2,1,0], fingers:[0,0,2,3,1,0]},
+  {name:'D',  frets:[-1,-1,0,2,3,2], fingers:[0,0,0,1,3,2]},
+  {name:'G',  frets:[3,2,0,0,0,3], fingers:[2,1,0,0,0,3]},
+  {name:'C',  frets:[-1,3,2,0,1,0], fingers:[0,3,2,0,1,0]},
+  {name:'E',  frets:[0,2,2,1,0,0], fingers:[0,2,3,1,0,0]},
+  {name:'A',  frets:[-1,0,2,2,2,0], fingers:[0,0,1,2,3,0]},
+  {name:'F',  frets:[1,3,3,2,1,1], fingers:[1,3,4,2,1,1], barre:{fret:1,from:0,to:5}}
+];
+
+function chordSVG(chord){
+  const strings=6, frets=5, w=120, h=150;
+  const sx0=15, sx1=w-15, fy0=20, fy1=h-10;
+  const dx=(sx1-sx0)/(strings-1), dy=(fy1-fy0)/(frets-1);
+  let svg=`<svg viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg">`;
+  // nut (thick line at top)
+  svg+=`<rect x="${sx0-2}" y="${fy0-3}" width="${sx1-sx0+4}" height="3" fill="#e8ecf2"/>`;
+  // frets
+  for(let f=0;f<=frets;f++){const y=fy0+f*dy;svg+=`<line x1="${sx0}" y1="${y}" x2="${sx1}" y2="${y}" stroke="#444" stroke-width="1"/>`;}
+  // strings
+  for(let s=0;s<strings;s++){const x=sx0+s*dx;svg+=`<line x1="${x}" y1="${fy0}" x2="${x}" y2="${fy1}" stroke="#666" stroke-width="1"/>`;}
+  // barre
+  if(chord.barre){
+    const b=chord.barre;const y=fy0+b.fret*dy-dy/2;
+    const x1=sx0+b.from*dx, x2=sx0+b.to*dx;
+    svg+=`<rect x="${x1-5}" y="${y-6}" width="${x2-x1+10}" height="6" rx="3" fill="#ff6b35"/>`;
+  }
+  // finger dots
+  chord.frets.forEach((f,i)=>{
+    const x=sx0+i*dx;
+    if(f===-1){svg+=`<text x="${x}" y="${fy0-8}" text-anchor="middle" fill="#888" font-size="10">x</text>`;}
+    else if(f===0){svg+=`<circle cx="${x}" cy="${fy0-8}" r="4" fill="none" stroke="#888" stroke-width="1"/>`;}
+    else{
+      const y=fy0+f*dy-dy/2;
+      svg+=`<circle cx="${x}" cy="${y}" r="7" fill="#ff6b35"/>`;
+      const fing=chord.fingers[i];
+      if(fing>0) svg+=`<text x="${x}" y="${y+3}" text-anchor="middle" fill="#1a1208" font-size="9" font-weight="bold">${fing}</text>`;
+    }
+  });
+  svg+=`</svg>`;
+  return svg;
+}
+
+const chordGrid = document.getElementById('chordGrid');
+CHORDS.forEach(c=>{
+  const card=document.createElement('div');
+  card.className='chord-card';
+  card.innerHTML=`<div class="chord-name">${c.name}</div><div class="chord-diagram">${chordSVG(c)}</div>`;
+  card.addEventListener('click',()=>playChord(c));
+  chordGrid.appendChild(card);
+});
+
+function playChord(c){
+  ensureCtx();
+  const now=audioCtx.currentTime;
+  // map string open frequencies (standard tuning) and apply fret
+  const open=[329.63,246.94,196.00,146.83,110.00,82.41]; // high e -> low E (index 0 = high e)
+  c.frets.forEach((f,i)=>{
+    if(f===-1) return;
+    const freq=open[i]*Math.pow(2,f/12);
+    const osc=audioCtx.createOscillator();
+    const g=audioCtx.createGain();
+    osc.type='triangle';
+    osc.frequency.value=freq;
+    const start=now+i*0.04;
+    g.gain.setValueAtTime(0,start);
+    g.gain.linearRampToValueAtTime(0.18,start+0.02);
+    g.gain.exponentialRampToValueAtTime(0.001,start+1.6);
+    osc.connect(g).connect(audioCtx.destination);
+    osc.start(start);
+    osc.stop(start+1.7);
+  });
+}
+
+/* ============================================================
+   LEARNING PATH PROGRESS (saved to localStorage)
+   ============================================================ */
+const STORAGE_KEY = 'strumstudio_progress';
+let progress = JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');
+
+function loadProgress(){
+  for(let stage=1;stage<=5;stage++){
+    const items = document.querySelectorAll(`.path-card:nth-child(${stage}) li`);
+    items.forEach((li,idx)=>{
+      const key=`s${stage}-${idx}`;
+      if(progress[key]){
+        li.style.color='var(--txt)';
+        li.style.textDecoration='line-through';
+        li.style.opacity='.6';
+      }
+      li.style.cursor='pointer';
+      li.addEventListener('click',()=>{
+        progress[key]=!progress[key];
+        localStorage.setItem(STORAGE_KEY,JSON.stringify(progress));
+        loadProgress();
+      });
+    });
+    updateStagePct(stage);
+  }
+}
+function updateStagePct(stage){
+  const items=document.querySelectorAll(`.path-card:nth-child(${stage}) li`);
+  let done=0;
+  items.forEach((li,idx)=>{if(progress[`s${stage}-${idx}`])done++;});
+  const pct=Math.round(done/items.length*100);
+  document.querySelector(`.progress-bar div[data-stage="${stage}"]`).style.width=pct+'%';
+  document.querySelector(`.pct[data-stage="${stage}"]`).textContent=pct+'%';
+}
+loadProgress();
+</script>
+</body>
+</html>
